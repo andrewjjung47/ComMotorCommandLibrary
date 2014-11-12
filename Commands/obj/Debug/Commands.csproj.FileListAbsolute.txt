@@ -1,0 +1,5 @@
+\\rmpfs04\homes04\junga\My Documents\Visual Studio 2013\Projects\Commands\Commands\bin\Debug\Commands.dll
+\\rmpfs04\homes04\junga\My Documents\Visual Studio 2013\Projects\Commands\Commands\bin\Debug\Commands.pdb
+\\rmpfs04\homes04\junga\My Documents\Visual Studio 2013\Projects\Commands\Commands\obj\Debug\Commands.csprojResolveAssemblyReference.cache
+\\rmpfs04\homes04\junga\My Documents\Visual Studio 2013\Projects\Commands\Commands\obj\Debug\Commands.dll
+\\rmpfs04\homes04\junga\My Documents\Visual Studio 2013\Projects\Commands\Commands\obj\Debug\Commands.pdb
