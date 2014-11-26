@@ -67,8 +67,8 @@ namespace Commands
             port.StopBits = StopBits.One;
 
             // Default timeout is 100ms when not specified.
-            port.ReadTimeout = (this.ReadTimeout == null) ? 100 : this.ReadTimeout;
-            port.WriteTimeout = (this.WriteTimeout == null) ? 100 : this.WriteTimeout;
+            port.ReadTimeout = (this.ReadTimeout == -1) ? 100 : this.ReadTimeout;
+            port.WriteTimeout = (this.WriteTimeout == -1) ? 100 : this.WriteTimeout;
 
             try
             {
