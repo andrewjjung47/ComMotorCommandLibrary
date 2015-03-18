@@ -141,7 +141,7 @@ namespace Commands
             }
         }
 
-        private readonly Object _lock = new Object();
+        private readonly static Object _lock = new Object();
 
         public string SendCommand(string command)
         {
@@ -173,23 +173,23 @@ namespace Commands
                 }
             }
         }
+    }
 
-        public class CommandsException : Exception
-        {
-            public CommandsException()
-                : base() { }
+    public class CommandsException : Exception
+    {
+        public CommandsException()
+            : base() { }
 
-            public CommandsException(string message)
-                : base(message) { }
+        public CommandsException(string message)
+            : base(message) { }
 
-            public CommandsException(string format, params object[] args)
-                : base(string.Format(format, args)) { }
+        public CommandsException(string format, params object[] args)
+            : base(string.Format(format, args)) { }
 
-            public CommandsException(string message, Exception innerException)
-                : base(message, innerException) { }
+        public CommandsException(string message, Exception innerException)
+            : base(message, innerException) { }
 
-            public CommandsException(string format, Exception innerException, params object[] args)
-                : base(string.Format(format, args), innerException) { }
-        }
+        public CommandsException(string format, Exception innerException, params object[] args)
+            : base(string.Format(format, args), innerException) { }
     }
 }
