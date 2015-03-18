@@ -164,6 +164,16 @@ namespace Commands
             return MotorIntResponse("$");
         }
 
+        /// <summary>
+        /// Returns a boolean whether the motor is referenced or not.
+        /// </summary>
+        /// <returns>'true' if the motor is referenced, 
+        /// 'false' if the motor is yet referenced.</returns>
+        public virtual bool IsReferenced()
+        {
+            return Convert.ToBoolean(2 & GetStatusByte());
+        }
+
         public virtual bool SetInputMaskEdge(int ioMask)
         {
             return MotorNoResponse("h" + ioMask);
