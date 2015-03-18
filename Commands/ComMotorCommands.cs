@@ -171,7 +171,7 @@ namespace Commands
         /// 'false' if the motor is yet referenced.</returns>
         public virtual bool IsReferenced()
         {
-            return Convert.ToBoolean(2 & GetStatusByte());
+            return Convert.ToBoolean(MotorIntResponse(":is_referenced"));
         }
 
         public virtual bool SetInputMaskEdge(int ioMask)
@@ -185,6 +185,11 @@ namespace Commands
             return MotorNoResponse("l" + (refInternal + norInternal + refExternal + norExternal));
         }
 
+        /// <summary>
+        /// Returns the current position of the motor in steps, 
+        /// relative to the position of the last reference run.
+        /// </summary>
+        /// <returns>Current position of the motor in steps.</returns>
         public virtual int GetPosition()
         {
             return MotorIntResponse("C");
