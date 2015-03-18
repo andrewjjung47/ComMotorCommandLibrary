@@ -40,7 +40,13 @@ namespace Commands
         public bool ErrorFlag
         {
             get { return errorFlag; }
-            protected set { errorFlag = value; }
+            protected set { 
+                errorFlag = value; 
+                if (!value)
+                {
+                    errorMessage = "";
+                }
+            }
         }
 
         // Used from UI to display error message. 
@@ -49,7 +55,12 @@ namespace Commands
         {
             get { return errorMessage; }
             // When errorMesssaged is added, errorFlag is always true. 
-            protected set { ErrorFlag = true; errorMessage = value + Environment.NewLine; }
+            protected set 
+            { 
+                ErrorFlag = true;
+                errorMessage = value + Environment.NewLine;
+                throw new SerialCommunicationException();
+            }
         }
 
         private void OpenPort()
@@ -61,14 +72,15 @@ namespace Commands
             }
 
             port.PortName = SelectedPort;
+
             port.BaudRate = (this.Baudrate <= 0) ? 115200 : this.Baudrate;
             port.Parity = Parity.None;
             port.DataBits = 8;
             port.StopBits = StopBits.One;
 
             // Default timeout is 100ms when not specified.
-            port.ReadTimeout = (this.ReadTimeout == -1) ? 100 : this.ReadTimeout;
-            port.WriteTimeout = (this.WriteTimeout == -1) ? 100 : this.WriteTimeout;
+            port.ReadTimeout = (this.ReadTimeout == 0) ? 100 : this.ReadTimeout;
+            port.WriteTimeout = (this.WriteTimeout == 0) ? 100 : this.WriteTimeout;
 
             try
             {
@@ -92,47 +104,56 @@ namespace Commands
             }
         }
 
-        public void ClosePort()
+        public static void ClosePort()
         {
-            if (port != null || port.IsOpen == true)
+            if (port != null && port.IsOpen == true)
             {
                 port.Close();
             }
         }
 
+        private readonly Object _lock = new Object();
+
         public string SendCommand(string command)
         {
-            if (port.IsOpen == false)
+            lock(_lock)
             {
-                OpenPort();
-            }
+                if (port == null || port.IsOpen == false)
+                {
+                    OpenPort();
+                }
 
-            try
-            {
-                port.Write(command);
-            }
-            catch (System.TimeoutException)
-            {
-                ErrorMessage += "Write time out.";
-            }
+                try
+                {
+                    port.Write(command);
+                }
+                catch (System.TimeoutException)
+                {
+                    ErrorMessage += "Write time out.";
+                }
 
-            try
-            {
-                return port.ReadTo("\r");
-            }
-            catch (System.TimeoutException)
-            {
-                ErrorMessage += "Read time out. Check the connection.";
+                try
+                {
+                    return port.ReadTo("\r");
+                }
+                catch (System.TimeoutException)
+                {
+                    ErrorMessage += "Read time out. Check the connection.";
 
-                return null;
+                    return null;
+                }
             }
         }
 
         public void ResetErrorFlag()
         {
-            // Recover from error by clearing errorMessage and setting errorFlag back to 'false'.
-            ErrorMessage = "";
+            // Recover from error by setting errorFlag back to 'false'. This clears errorMessage
             ErrorFlag = false;
         }
+    }
+
+    public class SerialCommunicationException : Exception
+    {
+
     }
 }

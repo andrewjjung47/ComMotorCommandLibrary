@@ -56,7 +56,7 @@ namespace Commands
             }
         }
 
-        private string MotorCommand(string command)
+        public string MotorCommand(string command)
         {
             string fullCommand = MotorAddresse + command;
             string response = SendCommand(String.Format("#{0}\r", fullCommand));
