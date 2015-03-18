@@ -59,8 +59,37 @@ namespace Commands
             { 
                 ErrorFlag = true;
                 errorMessage = value + Environment.NewLine;
-                throw new SerialCommunicationException();
             }
+        }
+
+        /// <summary>
+        /// Adds an error message to ErrorMessage and throws CommandsException.
+        /// </summary>
+        /// <param name="message"></param>
+        public void ReportError(string message)
+        {
+            ErrorMessage += message;
+            throw new CommandsException(message);
+        }
+
+        /// <summary>
+        /// Adds an error message to ErrorMessage 
+        /// and propagates inner exception using CommandsException.
+        /// </summary>
+        /// <param name="e"></param>
+        /// <param name="message"></param>
+        public void ReportError(string message, Exception e)
+        {
+            ErrorMessage += message;
+            throw new CommandsException(message, e);
+        }
+
+        /// <summary>
+        /// Recover from error by setting errorFlag back to 'false'. This clears ErrorMessage
+        /// </summary>
+        public void ResetErrorFlag()
+        {
+            ErrorFlag = false;
         }
 
         private void OpenPort()
@@ -86,21 +115,21 @@ namespace Commands
             {
                 port.Open();
             }
-            catch (UnauthorizedAccessException)
+            catch (UnauthorizedAccessException e)
             {
-                ErrorMessage += "Port access denied.";
+                ReportError("Port access denied.", e);
             }
-            catch (ArgumentException)
+            catch (ArgumentException e)
             {
-                ErrorMessage += "Invalid port name.";
+                ReportError("Invalid port name.", e);
             }
-            catch (System.IO.IOException)
+            catch (System.IO.IOException e)
             {
-                ErrorMessage += "Port does not exist.";
+                ReportError("Port does not exist.", e);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                ErrorMessage += "Unknown error while opening the serial port.";
+                ReportError("Unknown error while opening the serial port.", e);
             }
         }
 
@@ -127,33 +156,40 @@ namespace Commands
                 {
                     port.Write(command);
                 }
-                catch (System.TimeoutException)
+                catch (System.TimeoutException e)
                 {
-                    ErrorMessage += "Write time out.";
+                    ReportError("Write time out.", e);
                 }
 
                 try
                 {
                     return port.ReadTo("\r");
                 }
-                catch (System.TimeoutException)
+                catch (System.TimeoutException e)
                 {
-                    ErrorMessage += "Read time out. Check the connection.";
+                    ReportError("Read time out. Check the connection.", e);
 
                     return null;
                 }
             }
         }
 
-        public void ResetErrorFlag()
+        public class CommandsException : Exception
         {
-            // Recover from error by setting errorFlag back to 'false'. This clears errorMessage
-            ErrorFlag = false;
+            public CommandsException()
+                : base() { }
+
+            public CommandsException(string message)
+                : base(message) { }
+
+            public CommandsException(string format, params object[] args)
+                : base(string.Format(format, args)) { }
+
+            public CommandsException(string message, Exception innerException)
+                : base(message, innerException) { }
+
+            public CommandsException(string format, Exception innerException, params object[] args)
+                : base(string.Format(format, args), innerException) { }
         }
-    }
-
-    public class SerialCommunicationException : Exception
-    {
-
     }
 }

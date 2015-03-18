@@ -61,16 +61,10 @@ namespace Commands
             string fullCommand = MotorAddresse + command;
             string response = SendCommand(String.Format("#{0}\r", fullCommand));
 
-            // In case of read time out, response is null
-            if (response == null)
-            {
-                return null;
-            }
-
             // When command is unrecognized by the controller, the command is return with '?' at the end.
             if (response[response.Length - 1] == '?')
             {
-                ErrorMessage += "Command not recognized by the controller.";
+                ReportError("Command not recognized by the controller.");
                 return null;
             }
             else
@@ -93,7 +87,7 @@ namespace Commands
             }
             else
             {
-                ErrorMessage += "Invalid response from the controller (integer response expected and not received).";
+                ReportError("Invalid response from the controller (integer response expected and not received).");
 
                 return 0;
             }
